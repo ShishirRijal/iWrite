@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iwrite/core/theme/app_pallete.dart';
-import 'package:iwrite/features/auth/domain/usecases/user_sign_up.dart';
 import 'package:iwrite/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:iwrite/features/auth/presentation/views/login_view.dart';
 import 'package:iwrite/features/auth/presentation/widgets/custom_button.dart';
