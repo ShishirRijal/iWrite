@@ -14,6 +14,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         super(AuthInitial()) {
     on<AuthSignUp>((event, emit) async {
       emit(AuthLoading());
+      print('loading emitted');
+      await Future.delayed(Duration(seconds: 1)); // Simulate delay
 
       final response = await _userSignUp(
         SignUpParams(
