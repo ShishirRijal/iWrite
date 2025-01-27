@@ -39,7 +39,7 @@ Future<void> _initAuth() async {
       ));
 
   // Bloc
-  serviceLocator.registerFactory(() => AuthBloc(
+  serviceLocator.registerLazySingleton<AuthBloc>(() => AuthBloc(
         userSignUp: serviceLocator(),
       ));
 }
