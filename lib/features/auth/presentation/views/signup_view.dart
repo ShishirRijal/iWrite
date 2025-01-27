@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iwrite/core/theme/app_pallete.dart';
+import 'package:iwrite/features/auth/domain/usecases/user_sign_up.dart';
+import 'package:iwrite/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:iwrite/features/auth/presentation/views/login_view.dart';
 import 'package:iwrite/features/auth/presentation/widgets/custom_button.dart';
 import 'package:iwrite/features/auth/presentation/widgets/custom_text_form_field.dart';
@@ -16,9 +19,12 @@ class SignUpView extends StatefulWidget {
 class _SignUpViewState extends State<SignUpView> {
   final _formKey = GlobalKey<FormState>();
 
-  void submit() {}
-
-  void validate() {}
+  void submit() {
+    context.read<AuthBloc>().add(AuthSignUp(
+        name: _nameController.text,
+        email: _emailController.text,
+        password: _passwordController.text));
+  }
 
   // text controllers
   final _nameController = TextEditingController();
