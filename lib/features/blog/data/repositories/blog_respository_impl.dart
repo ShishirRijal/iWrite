@@ -10,7 +10,7 @@ import 'package:uuid/uuid.dart';
 
 class BlogRespositoryImpl implements BlogRepository {
   final BlogRemoteDataSource blogRemoteDataSource;
-  BlogRespositoryImpl({required this.blogRemoteDataSource});
+  BlogRespositoryImpl(this.blogRemoteDataSource);
 
   @override
   Future<Either<Failure, Blog>> uploadBlog(
