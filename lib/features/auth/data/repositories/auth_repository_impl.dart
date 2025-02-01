@@ -2,7 +2,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:iwrite/core/error/exceptions.dart';
 import 'package:iwrite/core/error/failures.dart';
 import 'package:iwrite/features/auth/data/data_sources/auth_remote_data_source.dart';
-import 'package:iwrite/features/auth/domain/entities/user.dart';
+import 'package:iwrite/core/common/entities/user.dart';
 import 'package:iwrite/features/auth/domain/repositories/auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
