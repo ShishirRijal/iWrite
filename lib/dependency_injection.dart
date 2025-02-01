@@ -3,6 +3,7 @@ import 'package:iwrite/core/secrets/app_secrets.dart';
 import 'package:iwrite/features/auth/data/data_sources/auth_remote_data_source.dart';
 import 'package:iwrite/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:iwrite/features/auth/domain/repositories/auth_repository.dart';
+import 'package:iwrite/features/auth/domain/usecases/user_login.dart';
 import 'package:iwrite/features/auth/domain/usecases/user_sign_up.dart';
 import 'package:iwrite/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -38,8 +39,13 @@ Future<void> _initAuth() async {
         serviceLocator(),
       ));
 
+  serviceLocator.registerFactory(() => UserLogin(
+        serviceLocator(),
+      ));
+
   // Bloc
   serviceLocator.registerLazySingleton<AuthBloc>(() => AuthBloc(
         userSignUp: serviceLocator(),
+        userLogin: serviceLocator(),
       ));
 }
