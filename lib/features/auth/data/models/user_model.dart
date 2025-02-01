@@ -1,4 +1,4 @@
-import 'package:iwrite/features/auth/domain/entities/user.dart';
+import 'package:iwrite/core/common/entities/user.dart';
 
 class UserModel extends User {
   UserModel({
@@ -21,5 +21,17 @@ class UserModel extends User {
       'name': super.name,
       'email': super.email,
     };
+  }
+
+  UserModel copyWith({
+    String? id,
+    String? name,
+    String? email,
+  }) {
+    return UserModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      email: email ?? this.email,
+    );
   }
 }
