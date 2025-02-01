@@ -5,6 +5,7 @@ import 'package:iwrite/core/theme/theme.dart';
 import 'package:iwrite/dependency_injection.dart';
 import 'package:iwrite/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:iwrite/features/auth/presentation/views/login_view.dart';
+import 'package:iwrite/features/blog/presentation/views/blog_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -45,10 +46,7 @@ class _MyAppState extends State<MyApp> {
         },
         builder: (context, isLoggedIn) {
           if (isLoggedIn) {
-            return const Scaffold(
-                body: Center(
-              child: Text("Home"),
-            ));
+            return BlogView();
           }
 
           return const LoginView();
