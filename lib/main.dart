@@ -5,6 +5,7 @@ import 'package:iwrite/core/theme/theme.dart';
 import 'package:iwrite/dependency_injection.dart';
 import 'package:iwrite/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:iwrite/features/auth/presentation/views/login_view.dart';
+import 'package:iwrite/features/blog/presentation/bloc/blog_bloc.dart';
 import 'package:iwrite/features/blog/presentation/views/blog_view.dart';
 
 void main() async {
@@ -17,6 +18,9 @@ void main() async {
     ),
     BlocProvider(
       create: (context) => serviceLocator<AuthBloc>(),
+    ),
+    BlocProvider(
+      create: (context) => serviceLocator<BlogBloc>(),
     ),
   ], child: const MyApp()));
 }

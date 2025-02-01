@@ -2,8 +2,14 @@ import 'dart:io';
 
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:iwrite/core/common/cubits/app_user/app_user_cubit.dart';
+import 'package:iwrite/core/common/widgets/custom_loading_indicator.dart';
 import 'package:iwrite/core/theme/app_pallete.dart';
 import 'package:iwrite/core/utils/pick_image.dart';
+import 'package:iwrite/core/utils/show_snackbar.dart';
+import 'package:iwrite/features/blog/presentation/bloc/blog_bloc.dart';
+import 'package:iwrite/features/blog/presentation/views/blog_view.dart';
 
 class AddBlogView extends StatefulWidget {
   static route() =>
@@ -15,8 +21,9 @@ class AddBlogView extends StatefulWidget {
 }
 
 class _AddBlogViewState extends State<AddBlogView> {
+  final formKey = GlobalKey<FormState>();
   final tags = ['Business', 'Technology', 'Programming', 'Health', 'Science'];
-  final selectedTags = [];
+  final List<String> selectedTags = [];
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
   File? image;
@@ -40,6 +47,24 @@ class _AddBlogViewState extends State<AddBlogView> {
     }
   }
 
+  // Upload Blog
+  void uploadBlog() {
+    formKey.currentState!.validate();
+    if (formKey.currentState!.validate() &&
+        image != null &&
+        selectedTags.isNotEmpty) {
+      final userId =
+          (context.read<AppUserCubit>().state as AppUserLoggedIn).user.id;
+      context.read<BlogBloc>().add(BlogUpload(
+            image: image!,
+            title: titleController.text.trim(),
+            content: descriptionController.text.trim(),
+            tags: selectedTags,
+            userId: userId,
+          ));
+    }
+  }
+
   @override
   void dispose() {
     titleController.dispose();
@@ -52,51 +77,74 @@ class _AddBlogViewState extends State<AddBlogView> {
     return Scaffold(
         appBar: AppBar(
           title: const Text('Add New Blog'),
+          actions: [
+            IconButton(
+              onPressed: uploadBlog,
+              icon: const Icon(Icons.check),
+            )
+          ],
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(15),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                // Upload Image
-                SelectImageCard(image: image, onTap: selectImage),
+        body: SingleChildScrollView(
+          child: BlocConsumer<BlogBloc, BlogState>(listener: (context, state) {
+            if (state is BlogSuccess) {
+              Navigator.pushAndRemoveUntil(
+                  context, BlogView.route(), (route) => false);
+            }
+            if (state is BlogFailure) {
+              showErrorSnackbar(context, state.message);
+            }
+          }, builder: (context, state) {
+            if (state is BlogLoading) {
+              return CustomLoadingIndicator();
+            }
+            return Padding(
+              padding: const EdgeInsets.all(15),
+              child: Form(
+                key: formKey,
+                child: Column(
+                  children: [
+                    // Upload Image
+                    SelectImageCard(image: image, onTap: selectImage),
 
-                const SizedBox(height: 20),
-                // Tags
-                SizedBox(
-                  height: 50,
-                  child: ListView.separated(
-                      shrinkWrap: true,
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) {
-                        return CustomTagChip(
-                          tags[index],
-                          isSelected: selectedTags.contains(tags[index]),
-                          onTap: () {
-                            setState(() {
-                              toggleTagSelection(tags[index]);
-                            });
+                    const SizedBox(height: 20),
+                    // Tags
+                    SizedBox(
+                      height: 50,
+                      child: ListView.separated(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index) {
+                            return CustomTagChip(
+                              tags[index],
+                              isSelected: selectedTags.contains(tags[index]),
+                              onTap: () {
+                                setState(() {
+                                  toggleTagSelection(tags[index]);
+                                });
+                              },
+                            );
                           },
-                        );
-                      },
-                      separatorBuilder: (context, _) {
-                        return const SizedBox(width: 20);
-                      },
-                      itemCount: tags.length),
+                          separatorBuilder: (context, _) {
+                            return const SizedBox(width: 20);
+                          },
+                          itemCount: tags.length),
+                    ),
+
+                    const SizedBox(height: 20),
+                    // Title
+                    BlogEditor(
+                        controller: titleController, hintText: 'Blog Title'),
+
+                    // Description
+                    const SizedBox(height: 20),
+                    BlogEditor(
+                        controller: descriptionController,
+                        hintText: 'Blog Content'),
+                  ],
                 ),
-
-                const SizedBox(height: 20),
-                // Title
-                BlogEditor(controller: titleController, hintText: 'Blog Title'),
-
-                // Description
-                const SizedBox(height: 20),
-                BlogEditor(
-                    controller: descriptionController,
-                    hintText: 'Blog Content'),
-              ],
-            ),
-          ),
+              ),
+            );
+          }),
         ));
   }
 }
@@ -106,15 +154,31 @@ class BlogEditor extends StatelessWidget {
     super.key,
     required this.controller,
     required this.hintText,
+    this.validator,
   });
   final TextEditingController controller;
   final String hintText;
+  final Function(String?)? validator;
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
       maxLines: null,
+      validator: (value) {
+        // If a validator is provided, use it
+        if (validator != null) {
+          return validator!(value);
+        }
+
+        // Else, use the default validator
+        // check for empty field
+        if (value!.isEmpty) {
+          return '$hintText is missing!';
+        }
+
+        return null;
+      },
       decoration: InputDecoration(
         hintText: hintText,
         border: OutlineInputBorder(

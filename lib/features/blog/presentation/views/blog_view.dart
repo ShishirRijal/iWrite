@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:iwrite/features/blog/presentation/views/add_blog_view.dart';
 
 class BlogView extends StatelessWidget {
+  static route() => MaterialPageRoute(builder: (context) => const BlogView());
   const BlogView({super.key});
 
   @override
