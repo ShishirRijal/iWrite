@@ -47,20 +47,17 @@ class _BlogViewState extends State<BlogView> {
           }
 
           if (state is BlogDisplaySuccess) {
-            return Padding(
-              padding: const EdgeInsets.all(15),
-              child: ListView.builder(
-                itemBuilder: (context, index) {
-                  final blog = state.blogs[index];
-                  return CustomBlogCard(
-                    blog,
-                    color: index.isEven
-                        ? AppPallete.gradient1
-                        : AppPallete.gradient2,
-                  );
-                },
-                itemCount: state.blogs.length,
-              ),
+            return ListView.builder(
+              itemBuilder: (context, index) {
+                final blog = state.blogs[index];
+                return CustomBlogCard(
+                  blog,
+                  color: index.isEven
+                      ? AppPallete.gradient1
+                      : AppPallete.gradient2,
+                );
+              },
+              itemCount: state.blogs.length,
             );
           }
           return SizedBox();
