@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:hive/hive.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:iwrite/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:iwrite/core/network/connection_checker.dart';
@@ -10,24 +11,34 @@ import 'package:iwrite/features/auth/domain/usecases/current_user.dart';
 import 'package:iwrite/features/auth/domain/usecases/user_login.dart';
 import 'package:iwrite/features/auth/domain/usecases/user_sign_up.dart';
 import 'package:iwrite/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:iwrite/features/blog/data/data_sources/blog_local_data_source.dart';
 import 'package:iwrite/features/blog/data/data_sources/blog_remote_data_source.dart';
 import 'package:iwrite/features/blog/data/repositories/blog_respository_impl.dart';
 import 'package:iwrite/features/blog/domain/repositories/blog_repositories.dart';
 import 'package:iwrite/features/blog/domain/usecases/get_blogs.dart';
 import 'package:iwrite/features/blog/domain/usecases/upload_blog.dart';
 import 'package:iwrite/features/blog/presentation/bloc/blog_bloc.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final GetIt serviceLocator = GetIt.instance;
 
 Future<void> initDependencies() async {
+  // Supabase
   final supabase = await Supabase.initialize(
     url: AppSecrets.supabaseUrl,
     anonKey: AppSecrets.supabaseAnonKey,
   );
-
   serviceLocator.registerLazySingleton(() => supabase.client);
+
+  // Internet Connection Checker
   serviceLocator.registerLazySingleton(() => InternetConnection());
+
+  // Hive
+  Hive.defaultDirectory = (await getApplicationDocumentsDirectory()).path;
+  serviceLocator.registerLazySingleton(
+    () => Hive.box(name: 'blogs'),
+  );
 
   // Core
   serviceLocator.registerLazySingleton(() => AppUserCubit());
@@ -81,9 +92,16 @@ Future<void> _initBlog() async {
             serviceLocator(),
           ));
 
+  serviceLocator
+      .registerFactory<BlogLocalDataSource>(() => BlogLocalDataSourceImpl(
+            box: serviceLocator(),
+          ));
+
   // Repositories
   serviceLocator.registerFactory<BlogRepository>(() => BlogRespositoryImpl(
-        serviceLocator(),
+        blogRemoteDataSource: serviceLocator(),
+        blogLocalDataSource: serviceLocator(),
+        connectionChecker: serviceLocator(),
       ));
 
   // Use cases
