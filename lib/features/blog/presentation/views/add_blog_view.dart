@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iwrite/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:iwrite/core/common/widgets/custom_loading_indicator.dart';
+import 'package:iwrite/core/constants/constants.dart';
 import 'package:iwrite/core/utils/pick_image.dart';
 import 'package:iwrite/core/utils/show_snackbar.dart';
 import 'package:iwrite/features/blog/presentation/bloc/blog_bloc.dart';
@@ -23,7 +24,6 @@ class AddBlogView extends StatefulWidget {
 
 class _AddBlogViewState extends State<AddBlogView> {
   final formKey = GlobalKey<FormState>();
-  final tags = ['Business', 'Technology', 'Programming', 'Health', 'Science'];
   final List<String> selectedTags = [];
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
@@ -112,23 +112,25 @@ class _AddBlogViewState extends State<AddBlogView> {
                     SizedBox(
                       height: 50,
                       child: ListView.separated(
-                          shrinkWrap: true,
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (context, index) {
-                            return CustomTagChip(
-                              tags[index],
-                              isSelected: selectedTags.contains(tags[index]),
-                              onTap: () {
-                                setState(() {
-                                  toggleTagSelection(tags[index]);
-                                });
-                              },
-                            );
-                          },
-                          separatorBuilder: (context, _) {
-                            return const SizedBox(width: 20);
-                          },
-                          itemCount: tags.length),
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (context, index) {
+                          return CustomTagChip(
+                            Constants.tags[index],
+                            isSelected:
+                                selectedTags.contains(Constants.tags[index]),
+                            onTap: () {
+                              setState(() {
+                                toggleTagSelection(Constants.tags[index]);
+                              });
+                            },
+                          );
+                        },
+                        separatorBuilder: (context, _) {
+                          return const SizedBox(width: 20);
+                        },
+                        itemCount: Constants.tags.length,
+                      ),
                     ),
 
                     const SizedBox(height: 20),
