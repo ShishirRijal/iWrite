@@ -18,3 +18,5 @@ final class BlogUpload extends BlogEvent {
     required this.userId,
   });
 }
+
+final class BlogGetAll extends BlogEvent {}
