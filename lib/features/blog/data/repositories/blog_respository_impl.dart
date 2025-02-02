@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:fpdart/fpdart.dart';
 import 'package:iwrite/core/error/failures.dart';
+import 'package:iwrite/core/network/connection_checker.dart';
+import 'package:iwrite/features/blog/data/data_sources/blog_local_data_source.dart';
 import 'package:iwrite/features/blog/data/data_sources/blog_remote_data_source.dart';
 import 'package:iwrite/features/blog/data/models/blog_model.dart';
 import 'package:iwrite/features/blog/domain/entities/blog.dart';
@@ -10,7 +12,13 @@ import 'package:uuid/uuid.dart';
 
 class BlogRespositoryImpl implements BlogRepository {
   final BlogRemoteDataSource blogRemoteDataSource;
-  BlogRespositoryImpl(this.blogRemoteDataSource);
+  final BlogLocalDataSource blogLocalDataSource;
+  final ConnectionChecker connectionChecker;
+  BlogRespositoryImpl({
+    required this.blogRemoteDataSource,
+    required this.blogLocalDataSource,
+    required this.connectionChecker,
+  });
 
   @override
   Future<Either<Failure, Blog>> uploadBlog(
@@ -19,6 +27,10 @@ class BlogRespositoryImpl implements BlogRepository {
       required String content,
       required List<String> tags,
       required String userId}) async {
+    if (!await connectionChecker.isConnected) {
+      return Left(Failure('No internet connection found!'));
+    }
+
     BlogModel blog = BlogModel(
       id: const Uuid().v1(),
       userId: userId,
@@ -42,7 +54,6 @@ class BlogRespositoryImpl implements BlogRepository {
 
       return Right(uploadedBlog);
     } catch (e) {
-      print("Error uploading blog: $e");
       return Left(Failure(e.toString()));
     }
   }
@@ -50,10 +61,15 @@ class BlogRespositoryImpl implements BlogRepository {
   @override
   Future<Either<Failure, List<Blog>>> getBlogs() async {
     try {
+      if (!await connectionChecker.isConnected) {
+        final blogs = blogLocalDataSource.loadBlogs();
+        return right(blogs);
+      }
+
       final blogs = await blogRemoteDataSource.getBlogs();
+      blogLocalDataSource.uploadLocalBlogs(blogs: blogs);
       return Right(blogs);
     } catch (e) {
-      print("Error getting blogs: $e");
       return Left(Failure(e.toString()));
     }
   }
