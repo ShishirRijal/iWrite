@@ -35,8 +35,9 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
         throw ServerException(message: "User is null");
       }
 
-      print(response.session);
       return UserModel.fromJson(response.user!.toJson());
+    } on AuthException catch (e) {
+      throw ServerException(message: e.message);
     } catch (e) {
       throw ServerException(message: e.toString());
     }
@@ -59,8 +60,9 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
       if (response.user == null) {
         throw ServerException(message: "User is null");
       }
-      print(response);
       return UserModel.fromJson(response.user!.toJson());
+    } on AuthException catch (e) {
+      throw ServerException(message: e.message);
     } catch (e) {
       throw ServerException(message: e.toString());
     }

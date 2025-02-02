@@ -25,8 +25,9 @@ class BlogRemoteDataSourceImpl extends BlogRemoteDataSource {
           await supabaseClient.from('blogs').insert(blog.toJson()).select();
 
       return BlogModel.fromJson(response.first);
+    } on PostgrestException catch (e) {
+      throw ServerException(message: e.message);
     } catch (e) {
-      print("Error uploading blog: $e");
       throw ServerException(message: e.toString());
     }
   }
@@ -44,8 +45,9 @@ class BlogRemoteDataSourceImpl extends BlogRemoteDataSource {
       return supabaseClient.storage
           .from('blog_images')
           .getPublicUrl('blogs/${blog.id}');
+    } on StorageException catch (e) {
+      throw ServerException(message: e.message);
     } catch (e) {
-      print("Error uploading image: $e");
       throw ServerException(message: e.toString());
     }
   }
@@ -56,14 +58,14 @@ class BlogRemoteDataSourceImpl extends BlogRemoteDataSource {
       final blogs = await supabaseClient.from('blogs').select(
             '*, users (name)',
           );
-      print('blogs: $blogs');
       return blogs
           .map((blog) => BlogModel.fromJson(blog).copyWith(
                 userName: blog['users']['name'],
               ))
           .toList();
+    } on PostgrestException catch (e) {
+      throw ServerException(message: e.message);
     } catch (e) {
-      print("Error getting blogs: $e");
       throw ServerException(message: e.toString());
     }
   }

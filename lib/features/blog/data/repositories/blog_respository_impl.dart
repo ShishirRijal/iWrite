@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:fpdart/fpdart.dart';
+import 'package:iwrite/core/error/exceptions.dart';
 import 'package:iwrite/core/error/failures.dart';
 import 'package:iwrite/core/network/connection_checker.dart';
 import 'package:iwrite/features/blog/data/data_sources/blog_local_data_source.dart';
@@ -53,7 +54,7 @@ class BlogRespositoryImpl implements BlogRepository {
       final uploadedBlog = await blogRemoteDataSource.uploadBlog(blog);
 
       return Right(uploadedBlog);
-    } catch (e) {
+    } on ServerException catch (e) {
       return Left(Failure(e.toString()));
     }
   }
@@ -69,7 +70,7 @@ class BlogRespositoryImpl implements BlogRepository {
       final blogs = await blogRemoteDataSource.getBlogs();
       blogLocalDataSource.uploadLocalBlogs(blogs: blogs);
       return Right(blogs);
-    } catch (e) {
+    } on ServerException catch (e) {
       return Left(Failure(e.toString()));
     }
   }
