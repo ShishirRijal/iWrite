@@ -7,6 +7,7 @@ import 'package:iwrite/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:iwrite/features/auth/presentation/views/login_view.dart';
 import 'package:iwrite/features/auth/presentation/widgets/custom_button.dart';
 import 'package:iwrite/features/auth/presentation/widgets/custom_text_form_field.dart';
+import 'package:iwrite/features/blog/presentation/views/blog_view.dart';
 
 class SignUpView extends StatefulWidget {
   static route() => MaterialPageRoute(builder: (context) => SignUpView());
@@ -43,6 +44,9 @@ class _SignUpViewState extends State<SignUpView> {
               listener: (context, state) {
                 if (state is AuthFailure) {
                   showErrorSnackbar(context, state.message);
+                } else if (state is AuthSuccess) {
+                  Navigator.pushAndRemoveUntil(
+                      context, BlogView.route(), (route) => false);
                 }
               },
               builder: (context, state) {
