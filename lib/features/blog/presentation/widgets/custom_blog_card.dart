@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:iwrite/core/theme/app_pallete.dart';
 import 'package:iwrite/core/utils/calculate_reading_time.dart';
 import 'package:iwrite/features/blog/domain/entities/blog.dart';
+import 'package:iwrite/features/blog/presentation/views/blog_detail_view.dart';
 
 class CustomBlogCard extends StatelessWidget {
   const CustomBlogCard(this.blog,
@@ -13,7 +14,7 @@ class CustomBlogCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-//
+        Navigator.of(context).push(BlogDetailView.route(blog));
       },
       child: Container(
         height: 200,
