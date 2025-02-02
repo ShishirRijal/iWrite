@@ -11,7 +11,8 @@ import 'package:iwrite/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:iwrite/features/blog/data/data_sources/blog_remote_data_source.dart';
 import 'package:iwrite/features/blog/data/repositories/blog_respository_impl.dart';
 import 'package:iwrite/features/blog/domain/repositories/blog_repositories.dart';
-import 'package:iwrite/features/blog/domain/usecases/upload_%20blog.dart';
+import 'package:iwrite/features/blog/domain/usecases/get_blogs.dart';
+import 'package:iwrite/features/blog/domain/usecases/upload_blog.dart';
 import 'package:iwrite/features/blog/presentation/bloc/blog_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -84,8 +85,13 @@ Future<void> _initBlog() async {
         serviceLocator(),
       ));
 
+  serviceLocator.registerFactory(() => GetBlogs(
+        serviceLocator(),
+      ));
+
   // Bloc
   serviceLocator.registerLazySingleton<BlogBloc>(() => BlogBloc(
-        serviceLocator(),
+        uploadBlog: serviceLocator(),
+        getBlogs: serviceLocator(),
       ));
 }

@@ -86,7 +86,7 @@ class _AddBlogViewState extends State<AddBlogView> {
         ),
         body: SingleChildScrollView(
           child: BlocConsumer<BlogBloc, BlogState>(listener: (context, state) {
-            if (state is BlogSuccess) {
+            if (state is BlogUploadSuccess) {
               Navigator.pushAndRemoveUntil(
                   context, BlogView.route(), (route) => false);
             }
