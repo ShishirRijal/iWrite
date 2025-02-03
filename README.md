@@ -9,8 +9,7 @@
 </div>
  
 
-# iWrite
-A blog application built with Clean Architecture Principles
+# iWrite | A blog application with Clean Architecture
 
 
 ## Overview
@@ -142,5 +141,5 @@ Here are some screenshots of **iWrite**, showcasing the UI and features.
 ---
 
 <div align="center">
-Made with ❤️ by Shishir Rijal.
+Made with ❤️ by Shishir Rijal
 </div>
